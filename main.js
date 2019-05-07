@@ -406,8 +406,9 @@ function createNode(value, parent)
 {
     const newHash = makeHash(10)
 
+    executionPath.push(`node [shape = circle, color=black, fontcolor=black, label = "${value.trim()}"]; ${newHash};`);
+    
     if (parent) {
-        executionPath.push(`node [shape = circle, color=black, fontcolor=black, label = "${value.trim()}"]; ${newHash};`);
         executionPath.push(`${parent} -> ${newHash};`);
     }
 

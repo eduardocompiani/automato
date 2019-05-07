@@ -370,11 +370,17 @@ function simular()
     
     d3.select('#execucao').graphviz().fade(false).renderDot(line.join('\n'));
 
-    const pass = getLeavesOfTree(executionTree).some(
-        function (leaf) {
-            return automatoEnd.indexOf(leaf) != -1;
-        }
-    );
+    const pass = getLeavesOfTree(executionTree)
+        .filter(
+            function (node) {
+                return !node.dead;
+            }
+        )    
+        .some(
+            function (node) {
+                return automatoEnd.indexOf(node.value) != -1;
+            }
+        );
 
     if (pass) {
         document.getElementById('resultado').innerHTML = "A entrada foi aceita";
@@ -429,11 +435,11 @@ function runValueOnLeaves(node, val)
     } else {
         // verifico os possiveis caminhos
         const possiblePaths = automato
-        .filter(
-            function (rule) {
-                return rule.step == node.value && rule.receive == val;
-            }
-        );
+            .filter(
+                function (rule) {
+                    return rule.step == node.value && rule.receive == val && !rule.dead;
+                }
+            );
 
         // para cada possivel caminho, crio um novo no
         possiblePaths.forEach(
@@ -448,6 +454,8 @@ function runValueOnLeaves(node, val)
                         node.children.push(
                             createNode(dest.trim(), node.hash)
                         );
+                    } else {
+                        node.dead = true;
                     }
                 })
             }
@@ -466,6 +474,6 @@ function getLeavesOfTree(node)
 
         return children;
     } else {
-        return [node.value];
+        return [node];
     }
 }
